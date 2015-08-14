@@ -15,6 +15,16 @@ blocChat.config(['$stateProvider', '$locationProvider', function($stateProvider,
     });
 }]);
 
-blocChat.controller('Home.controller', ['$scope', function($scope) {
+blocChat.factory('Room', ['$firebaseArray', function($firebaseArray) {
+    var firebaseRef = new Firebase('https://stewart-bloc-chat.firebaseio.com/');
+    var rooms = $firebaseArray(firebaseRef.child('rooms'));
+    return {
+        all: rooms
+    }
+}]);
 
+blocChat.controller('Home.controller', ['$scope', 'Room', function($scope, Room) {
+    $scope.room = Room.all;
+
+    console.log($scope.room);
 }]);
