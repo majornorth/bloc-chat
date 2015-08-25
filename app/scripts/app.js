@@ -1,4 +1,4 @@
-var blocChat = angular.module("BlocChat", ['firebase', 'ui.router']);
+var blocChat = angular.module("BlocChat", ['firebase', 'ui.router', 'ui.bootstrap']);
 
 blocChat.config(['$stateProvider', '$locationProvider', function($stateProvider, $locationProvider) {
     $locationProvider.html5Mode(true);
@@ -30,4 +30,20 @@ blocChat.factory("chatRooms", [
 
 blocChat.controller('Home.controller', ['$scope', 'chatRooms', function($scope, chatRooms) {
     $scope.rooms = chatRooms.rooms;
+}]);
+
+blocChat.controller('AddRoomModal.controller', ['$scope, $modal', function($scope, $modal) {
+    $scope.open = function () {
+        console.log("batman");
+        // var modalInstance = $modal.open({
+        //   animation: $scope.animationsEnabled,
+        //   templateUrl: '/templates/add-room.html',
+        //   controller: 'ModalInstanceCtrl',
+        //   // resolve: {
+        //   //   items: function () {
+        //   //     return $scope.items;
+        //   //   }
+        //   // }
+        // });
+    };
 }]);
