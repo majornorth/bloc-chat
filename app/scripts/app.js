@@ -32,18 +32,22 @@ blocChat.controller('Home.controller', ['$scope', 'chatRooms', function($scope, 
     $scope.rooms = chatRooms.rooms;
 }]);
 
-blocChat.controller('AddRoomModal.controller', ['$scope, $modal', function($scope, $modal) {
+blocChat.controller('AddRoomModal.controller', ['$scope', '$modal', function($scope, $modal) {
     $scope.open = function () {
-        console.log("batman");
-        // var modalInstance = $modal.open({
-        //   animation: $scope.animationsEnabled,
-        //   templateUrl: '/templates/add-room.html',
-        //   controller: 'ModalInstanceCtrl',
-        //   // resolve: {
-        //   //   items: function () {
-        //   //     return $scope.items;
-        //   //   }
-        //   // }
-        // });
+        var modalInstance = $modal.open({
+          animation: $scope.animationsEnabled,
+          templateUrl: '/templates/add-room.html',
+          controller: 'ModalInstanceCtrl'
+        });
+    };
+}]);
+
+blocChat.controller('ModalInstanceCtrl', ['$scope', '$modalInstance', function($scope, $modalInstance) {
+    $scope.newRoomObject = {
+        roomTitle: ''
+    };
+
+    $scope.addRoom = function () {
+        console.log($scope.newRoomObject.roomTitle);
     };
 }]);
