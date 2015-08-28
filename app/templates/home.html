@@ -2,7 +2,7 @@
 
 <div>
     <ul>
-        <li ng-repeat="room in rooms">
+        <li ng-repeat="room in rooms" ng-click="getRoom(room.name)">
             {{room.name}}
         </li>
     </ul>
