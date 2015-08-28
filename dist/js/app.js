@@ -22,8 +22,15 @@ blocChat.factory("chatRooms", [
         var roomsRef = new Firebase(roomsUrl);
         var roomsObject = $firebaseArray(roomsRef);
 
+        function addRoom(room) {
+            roomsObject.$add({
+                name: room
+            });
+        }
+
         return {
-            rooms: roomsObject
+            rooms: roomsObject,
+            add_room: addRoom
         };
     }
 ]);
@@ -42,12 +49,16 @@ blocChat.controller('AddRoomModal.controller', ['$scope', '$modal', function($sc
     };
 }]);
 
-blocChat.controller('ModalInstanceCtrl', ['$scope', '$modalInstance', function($scope, $modalInstance) {
+blocChat.controller('ModalInstanceCtrl', ['$scope', '$modalInstance', 'chatRooms', function($scope, $modalInstance, chatRooms) {
     $scope.newRoomObject = {
         roomTitle: ''
     };
 
     $scope.addRoom = function () {
         console.log($scope.newRoomObject.roomTitle);
+
+        var room = $scope.newRoomObject.roomTitle;
+
+        chatRooms.add_room(room);
     };
 }]);
