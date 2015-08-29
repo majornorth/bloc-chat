@@ -35,20 +35,25 @@ blocChat.factory("chatRooms", [
             });
         }
 
+        function setDefaultRoom(name){
+            var roomUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + name;
+            var roomRef = new Firebase(roomUrl);
+            var roomRef = $firebaseArray(roomRef);
+            return roomRef;
+        }
+
         function getRoom(name) {
             CurrentRoom.defaults.name = name;
             var currentRoom = CurrentRoom.defaults.name;
             if (currentRoom != 'citizens') {
-                var roomUrl = 'https://bloc-list.firebaseio.com/rooms/' + currentRoom;
-                console.log(roomUrl);
+                var roomUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + currentRoom;
                 var roomRef = new Firebase(roomUrl);
-                var roomRef =  $firebaseArray(roomRef);
+                var roomRef = $firebaseArray(roomRef);
                 return roomRef;
             } else {
-                var roomUrl = 'https://bloc-list.firebaseio.com/rooms/' + name;
-                console.log(roomUrl);
+                var roomUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + name;
                 var roomRef = new Firebase(roomUrl);
-                var roomRef =  $firebaseArray(roomRef);
+                var roomRef = $firebaseArray(roomRef);
                 return roomRef;
             }
         }
@@ -56,7 +61,8 @@ blocChat.factory("chatRooms", [
         return {
             rooms: roomsObject,
             add_room: addRoom,
-            get_room: getRoom
+            get_room: getRoom,
+            default_room: setDefaultRoom
         };
     }
 ]);
@@ -64,9 +70,19 @@ blocChat.factory("chatRooms", [
 blocChat.controller('Home.controller', ['$scope', 'chatRooms', function($scope, chatRooms) {
     $scope.rooms = chatRooms.rooms;
 
+    $scope.messages = chatRooms.default_room('villains');
+    console.log($scope.messages);
+
+    // $scope.messages.$add({
+    //     username: "david",
+    //     content: "penguin is the best villain of all time",
+    //     sentAt: "9:05 PM",
+    //     roomId: "JxHNEhOakQKuk7kryYx"
+    // });
+
     $scope.getRoom = function(name) {
-        $scope.currentRoom = chatRooms.get_room(name);
-        console.log(name);
+        $scope.messages = chatRooms.get_room(name);
+        console.log($scope.messages);
     }
 }]);
 

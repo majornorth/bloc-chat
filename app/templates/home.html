@@ -11,4 +11,12 @@
             Add Room
         </button>
     </div>
+    <div id="active-room">
+        <h1>{{room.name}}</h1>
+        <ul id="room-messages">
+            <li ng-repeat="message in messages">
+                {{message.content}}
+            </li>
+        </ul>
+    </div>
 </div>
