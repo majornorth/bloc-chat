@@ -35,10 +35,12 @@ blocChat.factory("chatRooms", [
             });
         }
 
-        function setDefaultRoom(name){
+        function setDefaultRoom(name, roomId){
             var roomUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + name;
+            console.log(roomUrl);
+            console.log(roomId);
             var roomRef = new Firebase(roomUrl);
-            var roomRef = $firebaseArray(roomRef);
+            var roomRef = $firebaseArray(roomRef.orderByChild('roomId').equalTo(roomId));
             return roomRef;
         }
 
@@ -47,16 +49,13 @@ blocChat.factory("chatRooms", [
             var currentRoom = CurrentRoom.defaults.name;
             if (currentRoom != 'citizens') {
                 var roomUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + currentRoom;
-                console.log(roomId);
                 var roomRef = new Firebase(roomUrl);
                 var roomRef = $firebaseArray(roomRef.orderByChild('roomId').equalTo(roomId));
-                console.log(roomRef);
                 return roomRef;
             } else {
                 var roomUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + name;
                 var roomRef = new Firebase(roomUrl);
-                var roomRef = $firebaseArray(roomRef.orderByChild('roomId'));
-                console.log(roomRef);
+                var roomRef = $firebaseArray(roomRef.orderByChild('roomId').equalTo(roomId));
                 return roomRef;
             }
         }
@@ -73,7 +72,7 @@ blocChat.factory("chatRooms", [
 blocChat.controller('Home.controller', ['$scope', 'chatRooms', function($scope, chatRooms) {
     $scope.rooms = chatRooms.rooms;
 
-    $scope.messages = chatRooms.default_room('villains');
+    $scope.messages = chatRooms.default_room('villains', '-JxHNGCos3CqOHn6-yoz');
     $scope.roomName = 'villains';
 
     // $scope.messages.$add({
