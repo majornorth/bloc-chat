@@ -2,7 +2,7 @@
 
 <div>
     <ul>
-        <li ng-repeat="room in rooms" ng-click="getRoom(room.name)">
+        <li ng-repeat="room in rooms" ng-click="getRoom(room.name, room.$id)">
             {{room.name}}
         </li>
     </ul>
@@ -12,7 +12,7 @@
         </button>
     </div>
     <div id="active-room">
-        <h1>{{room.name}}</h1>
+        <h1>{{roomName}}</h1>
         <ul id="room-messages">
             <li ng-repeat="message in messages">
                 {{message.content}}

@@ -42,18 +42,21 @@ blocChat.factory("chatRooms", [
             return roomRef;
         }
 
-        function getRoom(name) {
+        function getRoom(name, roomId) {
             CurrentRoom.defaults.name = name;
             var currentRoom = CurrentRoom.defaults.name;
             if (currentRoom != 'citizens') {
                 var roomUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + currentRoom;
+                console.log(roomId);
                 var roomRef = new Firebase(roomUrl);
-                var roomRef = $firebaseArray(roomRef);
+                var roomRef = $firebaseArray(roomRef.orderByChild('roomId').equalTo(roomId));
+                console.log(roomRef);
                 return roomRef;
             } else {
                 var roomUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + name;
                 var roomRef = new Firebase(roomUrl);
-                var roomRef = $firebaseArray(roomRef);
+                var roomRef = $firebaseArray(roomRef.orderByChild('roomId'));
+                console.log(roomRef);
                 return roomRef;
             }
         }
@@ -71,18 +74,18 @@ blocChat.controller('Home.controller', ['$scope', 'chatRooms', function($scope, 
     $scope.rooms = chatRooms.rooms;
 
     $scope.messages = chatRooms.default_room('villains');
-    console.log($scope.messages);
+    $scope.roomName = 'villains';
 
     // $scope.messages.$add({
-    //     username: "david",
-    //     content: "penguin is the best villain of all time",
-    //     sentAt: "9:05 PM",
-    //     roomId: "JxHNEhOakQKuk7kryYx"
+    //     username: "troll",
+    //     content: "this is just a troll nah mean",
+    //     sentAt: "9:12 PM",
+    //     roomId: "bizniss"
     // });
 
-    $scope.getRoom = function(name) {
-        $scope.messages = chatRooms.get_room(name);
-        console.log($scope.messages);
+    $scope.getRoom = function(name, $id) {
+        $scope.messages = chatRooms.get_room(name, $id);
+        $scope.roomName = name;
     }
 }]);
 
@@ -102,8 +105,6 @@ blocChat.controller('ModalInstance.controller', ['$scope', '$modalInstance', 'ch
     };
 
     $scope.addRoom = function () {
-        console.log($scope.newRoomObject.roomTitle);
-
         var room = $scope.newRoomObject.roomTitle;
 
         chatRooms.add_room(room);
