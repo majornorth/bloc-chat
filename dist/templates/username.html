@@ -1,0 +1,6 @@
+<h1>Set your username</h1>
+<input class="set-username" placeholder="Enter your username" ng-model="setNewUsername.name" required type="text">
+<button type="button" class="btn btn-primary" ng-click="setUserName()">
+    Set username
+</button>
+<div ng-model="usernameErrorTrue" ng-if="usernameErrorTrue">{{ usernameError }}</div>
