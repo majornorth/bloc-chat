@@ -48,10 +48,6 @@ blocChat.factory("chatRooms", [
             });
         }
 
-        function setUsername(name) {
-
-        }
-
         function setDefaultRoom(name, roomId){
             var roomUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + name;
             // console.log(roomUrl);
@@ -148,6 +144,5 @@ blocChat.controller('SetUsernameInstanceModal.controller', ['$scope', '$modalIns
             $cookies.blocChatCurrentUser = username;
             $modalInstance.dismiss();
         }
-
     };
 }]);
