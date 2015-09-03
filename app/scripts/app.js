@@ -26,6 +26,7 @@ blocChat.run(['$cookies', '$modal', function($cookies, $modal) {
     if (!$cookies.blocChatCurrentUser || $cookies.blocChatCurrentUser === '' ) {
         // Do something to allow users to set their username
         $modal.open({
+            backdrop : 'static',
             templateUrl: '/templates/username.html',
             controller: 'SetUsernameInstanceModal.controller'
         });
@@ -139,7 +140,9 @@ blocChat.controller('SetUsernameInstanceModal.controller', ['$scope', '$modalIns
         }
 
         if (username === '' || username === undefined) {
-            console.log('no way dude');
+            $scope.usernameError = 'Username cannot be empty';
+            $scope.usernameErrorTrue = true;
+            $scope.setNewUsername.name = '';
             return
         } else {
             $cookies.blocChatCurrentUser = username;
