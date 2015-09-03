@@ -1,4 +1,4 @@
-var blocChat = angular.module("BlocChat", ['firebase', 'ui.router', 'ui.bootstrap']);
+var blocChat = angular.module("BlocChat", ['firebase', 'ui.router', 'ui.bootstrap', 'ngCookies']);
 
 blocChat.service('CurrentRoom', function() {
     return {
@@ -21,6 +21,18 @@ blocChat.config(['$stateProvider', '$locationProvider', function($stateProvider,
     });
 }]);
 
+blocChat.run(['$cookies', '$modal', function($cookies, $modal) {
+
+    if (!$cookies.blocChatCurrentUser || $cookies.blocChatCurrentUser === '' ) {
+        // Do something to allow users to set their username
+        $modal.open({
+            templateUrl: '/templates/username.html',
+            controller: 'SetUsernameInstanceModal.controller'
+        });
+    }
+
+}]);
+
 blocChat.factory("chatRooms", [
     "$firebaseArray",
     "CurrentRoom",
@@ -35,10 +47,14 @@ blocChat.factory("chatRooms", [
             });
         }
 
+        function setUsername(name) {
+
+        }
+
         function setDefaultRoom(name, roomId){
             var roomUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + name;
-            console.log(roomUrl);
-            console.log(roomId);
+            // console.log(roomUrl);
+            // console.log(roomId);
             var roomRef = new Firebase(roomUrl);
             var roomRef = $firebaseArray(roomRef.orderByChild('roomId').equalTo(roomId));
             return roomRef;
@@ -93,12 +109,12 @@ blocChat.controller('AddRoomModal.controller', ['$scope', '$modal', function($sc
         var modalInstance = $modal.open({
           animation: $scope.animationsEnabled,
           templateUrl: '/templates/add-room.html',
-          controller: 'ModalInstance.controller'
+          controller: 'AddRoomModalInstance.controller'
         });
     };
 }]);
 
-blocChat.controller('ModalInstance.controller', ['$scope', '$modalInstance', 'chatRooms', function($scope, $modalInstance, chatRooms) {
+blocChat.controller('AddRoomModalInstance.controller', ['$scope', '$modalInstance', 'chatRooms', function($scope, $modalInstance, chatRooms) {
     $scope.newRoomObject = {
         roomTitle: ''
     };
@@ -107,5 +123,28 @@ blocChat.controller('ModalInstance.controller', ['$scope', '$modalInstance', 'ch
         var room = $scope.newRoomObject.roomTitle;
 
         chatRooms.add_room(room);
+    };
+}]);
+
+blocChat.controller('SetUsernameInstanceModal.controller', ['$scope', '$modalInstance', '$cookies', function($scope, $modalInstance, $cookies) {
+    $scope.setNewUsername = {
+        name: ''
+    };
+
+    $scope.setUserName = function () {
+        var username = $scope.setNewUsername.name;
+
+        if (!username === undefined) {
+            username = username.replace(/^\s+/, '').replace(/\s+$/, '');
+        }
+
+        if (username === '' || username === undefined) {
+            console.log('no way dude');
+            return
+        } else {
+            $cookies.blocChatCurrentUser = username;
+            $modalInstance.dismiss();
+        }
+
     };
 }]);
