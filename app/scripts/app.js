@@ -49,8 +49,6 @@ blocChat.factory("chatRooms", [
 
         function setDefaultRoom(name, roomId){
             var roomUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + name;
-            // console.log(roomUrl);
-            // console.log(roomId);
             var roomRef = new Firebase(roomUrl);
             var roomRef = $firebaseArray(roomRef.orderByChild('roomId').equalTo(roomId));
             return roomRef;
@@ -59,7 +57,6 @@ blocChat.factory("chatRooms", [
         function getRoom(name, roomId) {
             CurrentRoom.defaults.name = name;
             CurrentRoom.defaults.roomId = roomId;
-            console.log(CurrentRoom);
             var currentRoom = CurrentRoom.defaults.name;
             if (currentRoom != 'citizens') {
                 var roomUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + currentRoom;
@@ -84,15 +81,18 @@ blocChat.factory("chatRooms", [
 ]);
 
 blocChat.factory('Message', ['$firebaseArray', 'CurrentRoom', '$cookies', function($firebaseArray, CurrentRoom, $cookies) {
-    var currentRoom = CurrentRoom.defaults.name;
-    var messageUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + currentRoom;
-    var messagesRef = new Firebase(messageUrl);
-    var messages = $firebaseArray(messagesRef);
 
     function sendMessage(newMessage){
+        var roomId = CurrentRoom.defaults.roomId;
+        var currentRoom = CurrentRoom.defaults.name;
+        var userName = $cookies.blocChatCurrentUser;
+
+        var messageUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + currentRoom;
+        var messagesRef = new Firebase(messageUrl);
+        var messages = $firebaseArray(messagesRef);
 
         messages.$add({
-            username: name,
+            username: userName,
             content: newMessage,
             sentAt: "9:12 PM",
             roomId: roomId
@@ -110,32 +110,19 @@ blocChat.controller('Home.controller', ['$scope', 'chatRooms', 'Message', functi
     $scope.messages = chatRooms.default_room('villains', '-JxHNGCos3CqOHn6-yoz');
     $scope.roomName = 'villains';
 
-    // $scope.messages.$add({
-    //     username: "troll",
-    //     content: "this is just a troll nah mean",
-    //     sentAt: "9:12 PM",
-    //     roomId: "bizniss"
-    // });
-
     $scope.getRoom = function(name, $id) {
         $scope.messages = chatRooms.get_room(name, $id);
         $scope.roomName = name;
-    };
-
-    $scope.updateCurrentRoom = function () {
-
     };
 
     $scope.newMessage = {
         contents: ''
     };
 
-    $scope.sendMessage = function (roomName, $id) {
+    $scope.sendMessage = function () {
         var newMessage = $scope.newMessage.contents;
 
-        console.log(roomName);
-
-        // Message.send(newMessage, roomName, $id);
+        Message.send(newMessage);
 
         $scope.newMessage.contents = '';
     };
