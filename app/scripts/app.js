@@ -2,7 +2,7 @@ var blocChat = angular.module("BlocChat", ['firebase', 'ui.router', 'ui.bootstra
 
 blocChat.service('CurrentRoom', function() {
     return {
-        defaults: { name: 'citizens' }
+        defaults: { name: 'villains', roomId: '-JxHNGCos3CqOHn6-yoz'}
     }
 });
 
@@ -31,7 +31,6 @@ blocChat.run(['$cookies', '$modal', function($cookies, $modal) {
             controller: 'SetUsernameInstanceModal.controller'
         });
     }
-
 }]);
 
 blocChat.factory("chatRooms", [
@@ -50,8 +49,6 @@ blocChat.factory("chatRooms", [
 
         function setDefaultRoom(name, roomId){
             var roomUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + name;
-            // console.log(roomUrl);
-            // console.log(roomId);
             var roomRef = new Firebase(roomUrl);
             var roomRef = $firebaseArray(roomRef.orderByChild('roomId').equalTo(roomId));
             return roomRef;
@@ -59,6 +56,7 @@ blocChat.factory("chatRooms", [
 
         function getRoom(name, roomId) {
             CurrentRoom.defaults.name = name;
+            CurrentRoom.defaults.roomId = roomId;
             var currentRoom = CurrentRoom.defaults.name;
             if (currentRoom != 'citizens') {
                 var roomUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + currentRoom;
@@ -82,23 +80,52 @@ blocChat.factory("chatRooms", [
     }
 ]);
 
-blocChat.controller('Home.controller', ['$scope', 'chatRooms', function($scope, chatRooms) {
+blocChat.factory('Message', ['$firebaseArray', 'CurrentRoom', '$cookies', function($firebaseArray, CurrentRoom, $cookies) {
+
+    function sendMessage(newMessage){
+        var roomId = CurrentRoom.defaults.roomId;
+        var currentRoom = CurrentRoom.defaults.name;
+        var userName = $cookies.blocChatCurrentUser;
+
+        var messageUrl = 'https://stewart-bloc-chat.firebaseio.com/messages/' + currentRoom;
+        var messagesRef = new Firebase(messageUrl);
+        var messages = $firebaseArray(messagesRef);
+
+        messages.$add({
+            username: userName,
+            content: newMessage,
+            sentAt: "9:12 PM",
+            roomId: roomId
+        });
+    }
+
+    return {
+        send: sendMessage
+    }
+}]);
+
+blocChat.controller('Home.controller', ['$scope', 'chatRooms', 'Message', function($scope, chatRooms, Message) {
     $scope.rooms = chatRooms.rooms;
 
     $scope.messages = chatRooms.default_room('villains', '-JxHNGCos3CqOHn6-yoz');
     $scope.roomName = 'villains';
 
-    // $scope.messages.$add({
-    //     username: "troll",
-    //     content: "this is just a troll nah mean",
-    //     sentAt: "9:12 PM",
-    //     roomId: "bizniss"
-    // });
-
     $scope.getRoom = function(name, $id) {
         $scope.messages = chatRooms.get_room(name, $id);
         $scope.roomName = name;
-    }
+    };
+
+    $scope.newMessage = {
+        contents: ''
+    };
+
+    $scope.sendMessage = function () {
+        var newMessage = $scope.newMessage.contents;
+
+        Message.send(newMessage);
+
+        $scope.newMessage.contents = '';
+    };
 }]);
 
 blocChat.controller('AddRoomModal.controller', ['$scope', '$modal', function($scope, $modal) {
@@ -131,7 +158,7 @@ blocChat.controller('SetUsernameInstanceModal.controller', ['$scope', '$modalIns
     $scope.setUserName = function () {
         var username = $scope.setNewUsername.name;
 
-        if (!username === undefined) {
+        if (username !== undefined) {
             username = username.replace(/^\s+/, '').replace(/\s+$/, '');
         }
 
