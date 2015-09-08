@@ -19,4 +19,10 @@
             </li>
         </ul>
     </div>
+    <div id="message-form">
+        <input class="send-message" placeholder="Type your message" ng-model="newMessage.contents" required type="text">
+        <button ng-model="updateCurrentRoom" type="button" class="btn btn-primary" ng-click="sendMessage()">
+            Send
+        </button>
+    </div>
 </div>
